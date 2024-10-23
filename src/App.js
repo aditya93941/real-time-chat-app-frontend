@@ -9,7 +9,7 @@ class App extends Component {
         room: '',
         loggedIn: false
     }
-    socket = io('http://localhost:5000');
+    socket = io('https://real-time-chat-app-backend-hrej.onrender.com/');
     joinRoom = () => {
         const { username, room } = this.state;
         if (username && room) {
