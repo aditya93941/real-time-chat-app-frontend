@@ -1,25 +1,48 @@
-import logo from './logo.svg';
+import React, { Component } from 'react';
+import io from 'socket.io-client';
+import ChatRoom from './ChatRoom';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+    state = {
+        username: '',
+        room: '',
+        loggedIn: false
+    }
+    socket = io('http://localhost:5000');
+    joinRoom = () => {
+        const { username, room } = this.state;
+        if (username && room) {
+            this.socket.emit('joinRoom', { username, room });
+            this.setState({ loggedIn: true });
+        }
+    };
+    render() {
+        const { username, room, loggedIn } = this.state;
+        if (!loggedIn) {
+            return (
+                <div className="login-container">
+                    <h2>Join Chat</h2>
+                    <input
+                        type="text"
+                        placeholder="Enter your username"
+                        value={username}
+                        onChange={e => this.setState({ username: e.target.value })}
+                        className="login-input"
+                    />
+                    <input
+                        type="text"
+                        placeholder="Enter room name"
+                        value={room}
+                        onChange={e => this.setState({ room: e.target.value })}
+                        className="login-input"
+                    />
+                    <button onClick={this.joinRoom} className="login-button">Join</button>
+                </div>
+            );
+        }
+        return <ChatRoom socket={this.socket} username={username} room={room} />;
+    }
 }
 
 export default App;
